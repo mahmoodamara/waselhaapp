@@ -21,6 +21,30 @@ test('unrecognized provider codes and messages cannot enter diagnostic output', 
   assert.deepEqual(safeFailure(error), { reason: 'unknown', codes: [] });
 });
 
+test('MongoDB topology errors retain a nested TCP failure without server addresses', () => {
+  const tcp = Object.assign(new Error('connect ECONNREFUSED private-host'), { code: 'ECONNREFUSED' });
+  const selection = Object.assign(new Error('Server selection timed out'), {
+    name: 'MongoServerSelectionError',
+    reason: { servers: new Map([['private-host:27017', { error: new Error('private-db', { cause: tcp }) }]]) },
+  });
+  assert.deepEqual(safeFailure(selection), { reason: 'network', codes: ['ECONNREFUSED'] });
+});
+
+test('MongoDB topology TLS alert is classified without exposing OpenSSL text or hostnames', () => {
+  const tls = Object.assign(new Error('private-host: SSL routines alert'), { code: 'ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR' });
+  const selection = Object.assign(new Error('Server selection timed out'), {
+    name: 'MongooseServerSelectionError',
+    reason: { servers: new Map([['private-host:27017', { error: new Error('private-db', { cause: tls }) }]]) },
+  });
+  assert.deepEqual(safeFailure(selection), { reason: 'tls', codes: ['ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR'] });
+});
+
+test('a cyclic topology without lower-level details still identifies server selection', () => {
+  const error = Object.assign(new Error('private-cluster'), { name: 'MongoServerSelectionError' });
+  error.reason = { servers: new Map([['private-host:27017', { error }]]) };
+  assert.deepEqual(safeFailure(error), { reason: 'server_selection', codes: [] });
+});
+
 test('diagnostics refuse development mode before loading a local environment or contacting dependencies', () => {
   for (const args of [[], ['--start']]) {
   const child = spawnSync(process.execPath, [fileURLToPath(new URL('./diagnose-render.mjs', import.meta.url)), ...args], {

@@ -10,9 +10,26 @@ MongoDB وRedis محليين ومعزولين؛ أعاد health وready حالة
 كانت فارغة. الاتصال بـRedis في الملف المحلي غير مشفر؛ هذه نقطة تجهيز إنتاج
 منفصلة وليست سببًا مثبتًا لفشل النشر الحالي.
 
-سبب فشل محاولات Render الأولى كان غياب `ROUTING_BASE_URL`. أما المحاولات
-الأحدث ذات الرسالة العامة فلم يتحدد سببها بعد، والرابط الأساسي لم يرد على
-health أو ready خلال 45 ثانية وقت الفحص.
+سبب فشل محاولات Render الأولى كان غياب `ROUTING_BASE_URL`. وأثبت سجل Render
+اللاحق أن config ينجح، وكذلك Redis وOSRM، بينما يفشل MongoDB بعد نحو 13 ثانية.
+ثم يفشل بدء السيرفر أثناء انتظار MongoDB؛ لذلك لا يصل التنفيذ إلى فتح منفذ HTTP.
+سبب تعذر اتصال MongoDB نفسه ما زال يحتاج إثباتًا من الخطأ الداخلي وإعدادات الشبكة.
+
+## متابعة عطل MongoDB المؤكد داخل Render
+
+الاتصال ينجح من الجهاز المحلي ويفشل من Render. تحقق من قائمة الوصول في مشروع
+Atlas الصحيح: افتح خدمة **waselhaapp** في Render ثم **Connect → Outbound**،
+وانسخ جميع نطاقات CIDR الخاصة بهذه الخدمة. في MongoDB Atlas افتح إعدادات
+**Network Access / IP Access List** وأضف نطاقات Render المحددة إن كانت غير
+موجودة، وانتظر حتى تصبح الإدخالات Active، ثم أعد نشر التطبيق. إضافة عنوان
+الجهاز المحلي وحده لا تسمح لاتصالات Render. احتفظ بالنطاقات الحالية المطلوبة
+ولا تغيّر بيانات الدخول التي نجح اختبارها محليًا قبل إثبات خطأ authentication.
+
+هذه خطوة تحقق وإصلاح لعائق شبكة محتمل؛ فشل MongoDB وحده لا يثبت أن قائمة
+الوصول هي السبب. إذا استمر الفشل بعد التحقق منها، استخدم reason/codes الجديدة
+لتمييز DNS أو TLS أو الشبكة أو المصادقة. تقرأ الأداة الآن الأخطاء الداخلية في
+MongoDB topology دون طباعة أسماء الخوادم. نجاح TCP أو ظهور TLS alert لا يبرر
+تعطيل فحص الشهادات. لا تغيّر HOST أو PORT لمعالجة فشل قاعدة البيانات.
 
 ## جمع دليل من بيئة Render الفعلية
 
@@ -38,6 +55,8 @@ ping وطلب مسار عام بواسطة عميل السيرفر الحالي.
 | mongo مع authentication أو code 18 | راجع بيانات مستخدم Atlas في Environment دون نشرها |
 | mongo مع authorization أو code 13 | راجع صلاحيات مستخدم قاعدة البيانات |
 | mongo مع dns أو timeout | افحص DNS وشبكة Atlas وNetwork Access لعناوين خروج الخدمة؛ لا تفترض أن timeout يثبت مشكلة allowlist وحدها |
+| mongo مع tls | استخدم رمز الخطأ الداخلي لمراجعة الشهادة/المصافحة، وراجع IP Access List أيضًا إن أعاد Atlas TLS alert |
+| mongo مع server_selection | فشل اختيار خادم دون تفاصيل أدنى متاحة؛ تحقق من وصول الشبكة وحالة العنقود |
 | redis يفشل | راجع رابط Redis الحقيقي، auth، TLS وقواعد الوصول، وفق reason/code |
 | routing يفشل | افحص رابط OSRM والخمول/مهلة الخطة المجانية |
 | الفحوص تنجح ثم application_start يفشل | استخدم code الآمن وسجل التطبيق لتحديد الخطوة التالية أثناء بدء التطبيق |
@@ -65,4 +84,6 @@ node --test scripts/test-diagnose-render.mjs
 شغّلها دون `--start` مع متغيرات بيئة العملية؛ لا تقرأ الأداة ملفات `.env` المحلية.
 
 المراجع: [تشخيص Render](https://render.com/docs/troubleshooting-deploys)،
-[فحوص الصحة](https://render.com/docs/health-checks).
+[فحوص الصحة](https://render.com/docs/health-checks)،
+[نطاقات خروج Render](https://render.com/docs/outbound-ip-addresses)،
+[مشكلات اتصال Atlas](https://www.mongodb.com/docs/atlas/troubleshoot-connection/).

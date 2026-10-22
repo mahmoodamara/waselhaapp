@@ -7,25 +7,46 @@ import path from 'node:path';
 const requireBackend = createRequire(new URL('../backend/package.json', import.meta.url));
 const knownCodes = new Set(['ENOTFOUND', 'EAI_AGAIN', 'ECONNREFUSED', 'ECONNRESET',
   'ETIMEDOUT', 'ENETUNREACH', 'CERT_HAS_EXPIRED', 'ERR_TLS_CERT_ALTNAME_INVALID',
-  'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'MODULE_NOT_FOUND']);
+  'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'MODULE_NOT_FOUND',
+  'ETIMEOUT', 'ENODATA', 'ESERVFAIL', 'EREFUSED', 'ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR',
+  'ERR_SSL_SSLV3_ALERT_HANDSHAKE_FAILURE', 'ERR_SSL_TLSV1_ALERT_PROTOCOL_VERSION',
+  'ERR_SSL_UNEXPECTED_EOF_WHILE_READING', 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY']);
 
 export function safeFailure(error) {
   const messages = [];
   const codes = [];
-  let current = error;
-  for (let depth = 0; current && depth < 5; depth++, current = current.cause) {
+  const queue = [error];
+  const seen = new Set();
+  let selectionFailure = false;
+  // MongoDB stores lower-level failures in reason.servers, not just cause.
+  // Traverse known error links only; never serialize the topology or map keys.
+  for (let index = 0; index < queue.length && index < 32; index++) {
+    const current = queue[index];
+    if (!current || typeof current !== 'object' || seen.has(current)) continue;
+    seen.add(current);
     messages.push(String(current.message || ''));
     if (knownCodes.has(current.code) || Number.isSafeInteger(current.code)) codes.push(current.code);
+    if (['MongoServerSelectionError', 'MongooseServerSelectionError'].includes(current.name)) selectionFailure = true;
+    for (const link of [current.cause, current.reason, current.error]) if (link) queue.push(link);
+    if (current.servers instanceof Map) {
+      let count = 0;
+      for (const server of current.servers.values()) {
+        if (++count > 8) break;
+        if (server?.error) queue.push(server.error);
+      }
+    }
+    if (current instanceof AggregateError) queue.push(...current.errors.slice(0, 8));
   }
   const text = messages.join(' ');
   let reason = 'unknown';
   if (codes.includes(18) || /WRONGPASS|NOAUTH|Authentication failed/i.test(text)) reason = 'authentication';
   else if (codes.includes(13) || /not authorized|permission denied/i.test(text)) reason = 'authorization';
-  else if (codes.some(code => /CERT|TLS|SIGNATURE/.test(String(code))) || /certificate/i.test(text)) reason = 'tls';
-  else if (codes.some(code => ['ENOTFOUND', 'EAI_AGAIN'].includes(code))) reason = 'dns';
-  else if (error?.name === 'TimeoutError' || /timed? ?out|timeout/i.test(text)) reason = 'timeout';
+  else if (codes.some(code => /CERT|TLS|SSL|SIGNATURE/.test(String(code))) || /certificate/i.test(text)) reason = 'tls';
+  else if (codes.some(code => ['ENOTFOUND', 'EAI_AGAIN', 'ETIMEOUT', 'ENODATA', 'ESERVFAIL', 'EREFUSED'].includes(code)) || /querySrv|queryTxt|getaddrinfo/i.test(text)) reason = 'dns';
   else if (codes.some(code => ['ECONNREFUSED', 'ECONNRESET', 'ENETUNREACH'].includes(code))) reason = 'network';
+  else if (codes.includes('ETIMEDOUT') || error?.name === 'TimeoutError' || /timed? ?out|timeout/i.test(text)) reason = 'timeout';
   else if (codes.includes('MODULE_NOT_FOUND')) reason = 'missing_dependency';
+  else if (selectionFailure) reason = 'server_selection';
   return { reason, codes: [...new Set(codes)] };
 }
 
