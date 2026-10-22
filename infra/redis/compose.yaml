@@ -1,0 +1,9 @@
+services:
+  redis:
+    image: redis:7.4.6-alpine@sha256:3b73847e72874be07e6657b129a94761662b79bc0f679273757d4218573b2a98
+    ports:
+      - "127.0.0.1:6379:6379"
+    # Realtime state only: no GPS history or durable volume.
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    security_opt:
+      - no-new-privileges:true

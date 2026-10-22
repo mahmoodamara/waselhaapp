@@ -1,0 +1,76 @@
+/* Design tokens: the one place colours, type, radii and shadows are defined.
+   Every stylesheet reads these; no screen should hard-code a colour or size.
+   Text colours below keep at least 4.5:1 on the surfaces they are used on. */
+:root {
+  /* Brand */
+  --brand: #0c5849;
+  --brand-hover: #17463d;
+  --brand-text: #245a4d; /* links and secondary-button text */
+  --brand-soft: #e9f1eb; /* hover, selected and icon backgrounds */
+  --brand-line: #aec5a6; /* accent borders */
+
+  /* Text */
+  --ink: #173d34;
+  --muted: #55665c;
+  --on-brand: #fff;
+
+  /* Surfaces and lines */
+  --bg: #f5f7f5;
+  --surface: #fff;
+  --surface-alt: #f3f7f2;
+  --line: #dfe7e2;
+  --line-strong: #d3ddd6;
+
+  /* Feedback: success, attention, danger */
+  --success-fg: #216c41;
+  --success-bg: #e8f7ed;
+  --success-line: #d3eddb;
+  --attention-fg: #6c5425;
+  --attention-bg: #fff7e6;
+  --attention-line: #eddfbe;
+  --danger: #a73939; /* danger buttons and negative amounts */
+  --danger-fg: #8e3930;
+  --danger-bg: #fff0ed;
+  --danger-line: #efd4cd;
+  --success-dot: #4b8c68;
+  --attention-dot: #b37635;
+  --badge: #b65c35;
+  --warn-fg: #b4491f; /* a step the other side is late with; 5:1 on white */
+  --track: #e3e8e4; /* the unfilled part of a progress bar */
+
+  /* WhatsApp is used only for WhatsApp actions */
+  --whatsapp: #25d366;
+  --whatsapp-hover: #1fb858;
+  --on-whatsapp: #052e16;
+
+  --focus: #b78830;
+
+  /* Type */
+  --font: "Noto Sans Arabic Variable", "Noto Sans Hebrew Variable", system-ui,
+    -apple-system, "Segoe UI", Arial, sans-serif;
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 15px; /* body text */
+  --fs-lg: 17px;
+  --fs-xl: 20px;
+  --fs-2xl: 24px;
+  --fs-3xl: 30px;
+  --fs-4xl: 42px;
+  --fs-display: 70px;
+  --fs-input: 16px; /* below 16px iOS zooms into the field on focus */
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 9px;
+  --r-lg: 14px;
+  --r-card: 20px; /* the large cards of the store home */
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --shadow-menu: 0 12px 35px #13342c1a;
+  --shadow-float: 0 2px 15px #123c2820;
+  --shadow-dialog: 0 20px 80px #122d3433;
+  --shadow-pin: 0 2px 6px #00000055;
+  --backdrop: #172f2a66;
+}

@@ -1,0 +1,516 @@
+/* Store order page: a single phone-width column of cards with the one action
+   pinned at the bottom. Colours, radii and type come from tokens.css. */
+.od {
+  max-width: 560px;
+  margin-inline: auto;
+  padding-block-end: 24px;
+}
+.od :is(h1, h2, p) {
+  margin-block: 0;
+}
+.od h2 {
+  font-size: var(--fs-lg);
+}
+
+/* ---- Header ---- */
+.od-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block-end: 16px;
+}
+.od-title {
+  flex: 1;
+  min-width: 0;
+}
+.od .od-title h1 {
+  font-size: var(--fs-xl);
+  line-height: 1.4;
+}
+.od-title h1:focus {
+  outline: none;
+}
+.od-title p {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.od-round {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  min-height: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+}
+.od-round:hover {
+  background: var(--brand-soft);
+}
+.od-round.soft {
+  width: 48px;
+  height: 48px;
+  background: var(--brand-soft);
+  border-color: transparent;
+  color: var(--brand);
+}
+.od-menu {
+  position: relative;
+}
+.od-menu-list {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: calc(100% + 6px);
+  z-index: 20;
+  display: grid;
+  min-width: 220px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-menu);
+}
+.od-menu-list :is(a, button) {
+  justify-content: flex-start;
+  min-height: 44px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-md);
+  color: var(--ink);
+  font-weight: 500;
+  text-align: start;
+}
+.od-menu-list :is(a, button):hover {
+  background: var(--brand-soft);
+}
+
+/* ---- Cards ---- */
+.od-card {
+  margin-block-end: 14px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.od-card > h2 {
+  margin-block-end: 14px;
+}
+.od-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-block-end: 12px;
+}
+.od-card-head h2 {
+  font-size: var(--fs-lg);
+}
+.od-card .callout {
+  margin-block: 12px 0;
+}
+
+/* The state: what is happening, and whether it is on the store */
+.od-state h2 {
+  margin-block: 6px 6px;
+  font-size: var(--fs-xl);
+}
+.od-state p:not(.od-label) {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.od-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--muted);
+}
+.od-label i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.od-label.action {
+  color: var(--warn-fg);
+}
+.od-label.action i {
+  background: var(--attention-dot);
+}
+.od-label.success {
+  color: var(--success-fg);
+}
+.od-label.success i {
+  background: var(--success-dot);
+}
+
+/* Pickup code */
+.od-code {
+  text-align: center;
+}
+.od-code h2 {
+  color: var(--muted);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.od-code-digits {
+  display: block;
+  margin-block: 12px;
+  color: var(--brand);
+  font-family: ui-monospace, monospace;
+  font-size: var(--fs-4xl);
+  letter-spacing: 10px;
+  overflow-wrap: anywhere;
+}
+.od-code p {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* Timeline */
+.od-timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.od-timeline li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  color: var(--muted);
+}
+/* The connector runs from this dot to the next one. */
+.od-timeline li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 11px;
+  inset-block-start: 34px;
+  width: 2px;
+  height: calc(100% - 22px);
+  background: var(--line);
+}
+.od-timeline li.done:not(:last-child)::after {
+  background: var(--brand);
+}
+.od-dot {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--on-brand);
+  z-index: 1;
+}
+.od-timeline li.done .od-dot {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+.od-timeline li.current .od-dot {
+  border-color: var(--brand);
+}
+.od-timeline li.done {
+  color: var(--ink);
+}
+.od-timeline li.current {
+  color: var(--brand);
+  font-weight: 700;
+}
+.od-step {
+  flex: 1;
+}
+.od-timeline time {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Driver */
+.od-person {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+}
+.od-person > div {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.od-person small {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.od-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  background: var(--brand-soft);
+  border-radius: 50%;
+  color: var(--brand);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+}
+
+/* Customer and amounts */
+.od-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  background: var(--attention-bg);
+  border-radius: var(--r-pill);
+  color: var(--attention-fg);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+.od-badge.ok {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+.od-rows {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+.od-rows > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 0;
+}
+.od-rows dt {
+  flex-shrink: 0;
+  display: grid;
+  color: var(--muted);
+}
+.od-rows dt small {
+  font-size: var(--fs-xs);
+}
+.od-rows dd {
+  margin: 0;
+  min-width: 0;
+  text-align: end;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.od-rows.amounts dd {
+  font-variant-numeric: tabular-nums;
+}
+.od-rows .total {
+  margin-block-start: 6px;
+  padding-block-start: 14px;
+  border-top: 1px solid var(--line);
+}
+.od-rows .total dt {
+  color: var(--ink);
+  font-weight: 700;
+}
+.od-rows .total dd {
+  color: var(--brand);
+  font-size: var(--fs-2xl);
+  line-height: 1.2;
+}
+.od-card > a:not(.od-round) {
+  display: inline-block;
+  margin-block-start: 8px;
+}
+.od-card .mw-customer-link {
+  margin-block-start: 14px;
+  padding-block-start: 14px;
+  border-top: 1px solid var(--line);
+}
+.od-card .mw-customer-link h3 {
+  display: none;
+}
+
+/* Parcel details stay folded until asked for. */
+.od-more summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.od-more[open] summary {
+  margin-block-end: 8px;
+}
+
+/* ---- The action bar ---- */
+.od-bar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 15;
+  display: grid;
+  gap: 4px;
+  margin-inline: -4px;
+  padding: 12px 4px calc(12px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.od-primary {
+  width: 100%;
+  min-height: 56px;
+  border-radius: var(--r-lg);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+.od-cancel {
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-weight: 500;
+}
+.od-cancel:hover:not(:disabled) {
+  background: transparent;
+  color: var(--danger-fg);
+  text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+  /* On a phone the page sits above the bottom navigation. */
+  .od-bar {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: calc(65px + env(safe-area-inset-bottom));
+    margin: 0;
+    padding: 10px 16px;
+  }
+  .od {
+    padding-block-end: 150px;
+  }
+  .keyboard-open .od-bar {
+    display: none;
+  }
+  .od-code-digits {
+    letter-spacing: 6px;
+  }
+}
+
+/* ---- Order created ---- */
+.oc {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 480px;
+  margin: 40px auto 0;
+  padding: 40px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  text-align: center;
+}
+.oc :is(h1, p) {
+  margin-block: 0;
+}
+.oc .oc-body h1 {
+  margin-block: 22px 30px;
+  font-size: var(--fs-2xl);
+}
+.oc h1:focus {
+  outline: none;
+}
+.oc-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  background: var(--brand);
+  border-radius: 50%;
+  color: var(--on-brand);
+}
+.oc .oc-label {
+  margin-block-end: 4px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.oc .oc-number {
+  margin-block-end: 24px;
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.oc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  font-weight: 600;
+}
+.oc-status i {
+  width: 10px;
+  height: 10px;
+  background: var(--brand);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--brand-soft);
+}
+.oc .oc-hint {
+  margin-block-start: 22px;
+  color: var(--muted);
+}
+.oc-actions {
+  display: grid;
+  gap: 10px;
+}
+.oc-whatsapp,
+.oc-open {
+  width: 100%;
+  min-height: 56px;
+  border-radius: var(--r-lg);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+.oc-open {
+  min-height: 52px;
+  background: var(--surface);
+  border-color: var(--line-strong);
+  color: var(--ink);
+  font-size: var(--fs-md);
+  font-weight: 500;
+}
+.oc-copy {
+  justify-self: center;
+  min-height: 40px;
+  background: transparent;
+  border: 0;
+  color: var(--brand-text);
+  font-weight: 600;
+}
+.oc-copy:hover:not(:disabled) {
+  background: transparent;
+  text-decoration: underline;
+}
+@media (max-width: 800px) {
+  /* On a phone the page fills the screen and the actions rest at the bottom. */
+  .oc {
+    min-height: calc(100dvh - 40px - env(safe-area-inset-bottom));
+    margin: 0;
+    padding: 24px 4px 12px;
+    background: transparent;
+    border: 0;
+    justify-content: space-between;
+  }
+  .oc-body {
+    padding-block-start: 48px;
+  }
+}
+.mw-sms-action { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; max-width: 100%; }
+.mw-sms-action [role="status"] { font-size: .85rem; overflow-wrap: anywhere; }
+.od-customer-banner { flex-wrap: wrap; }
+.od-customer-banner > div { flex-basis: calc(100% - 62px); }
+.od-customer-banner > .mw-sms-action { flex: 1 1 100%; }

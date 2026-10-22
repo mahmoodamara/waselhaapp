@@ -1,0 +1,71 @@
+# Standalone production dependencies for the existing host-run backend.
+# Do not merge with the development compose files. See infra/deploy/README.md.
+name: waselha-production
+services:
+  redis:
+    extends:
+      file: infra/redis/compose.yaml
+      service: redis
+    # Current patch in the existing 7.4 series; keep development unchanged.
+    image: redis:7.4.11-alpine@sha256:892022f9f18c26c92c30e15194d132f90044af87b94a491a75429bbc3982eab1
+    restart: unless-stopped
+    user: redis
+    read_only: true
+    cap_drop: [ALL]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Supply a random 64-character hex REDIS_PASSWORD}
+    entrypoint: [sh, /usr/local/bin/start-production.sh]
+    command: []
+    volumes:
+      - redis_data:/data
+      - ./infra/redis/start-production.sh:/usr/local/bin/start-production.sh:ro
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=1m,mode=1777
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli --raw ping | grep -qx PONG']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    stop_grace_period: 30s
+    networks: [services]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}
+  osrm:
+    # Reuse the pinned official image, car graph basename, MLD command and
+    # loopback port from the existing OSRM service.
+    extends:
+      file: infra/osrm/compose.yaml
+      service: osrm
+    user: '65534:65534'
+    read_only: true
+    cap_drop: [ALL]
+    volumes:
+      - type: bind
+        source: ${OSRM_DATA_DIR:?Set the absolute OSRM data directory}/releases/${OSRM_RELEASE:?Select a successfully prepared OSRM release}
+        target: /data
+        read_only: true
+        bind:
+          create_host_path: false
+      - ./infra/osrm/healthcheck.sh:/usr/local/bin/healthcheck-osrm.sh:ro
+    healthcheck:
+      test: [CMD, timeout, '5', bash, /usr/local/bin/healthcheck-osrm.sh]
+      interval: 15s
+      timeout: 6s
+      retries: 3
+      start_period: 60s
+    stop_grace_period: 30s
+    networks: [services]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}
+networks:
+  services:
+    # The backend lives on the host, so this bridge must support port publishing.
+    # Inbound access is restricted by explicit loopback mappings on both services.
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: 127.0.0.1
+volumes:
+  redis_data:

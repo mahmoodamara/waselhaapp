@@ -1,0 +1,624 @@
+/* Store home: greeting, summary strip, what needs the store, active orders.
+   Everything is scoped to .mh-home. On a phone the same markup becomes one
+   column: the action cards turn into a list and each order into a small card. */
+.mh-home {
+  max-width: 1160px;
+  margin-inline: auto;
+  font-family: var(--font);
+  font-size: var(--fs-input);
+  line-height: 1.7;
+}
+
+/* Greeting and the one primary action */
+.mh-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-block-end: 32px;
+}
+.mh-hello {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.mh-hello-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+  flex-shrink: 0;
+}
+.mh-home .mh-hello h1 {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.mh-home .mh-summary {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-input);
+}
+.mh-home .mh-bell {
+  display: none;
+}
+.mh-home .mh-create {
+  min-height: 52px;
+  padding-inline: 24px;
+  border-radius: var(--r-lg);
+  font-size: var(--fs-lg);
+  flex-shrink: 0;
+}
+
+/* Summary strip */
+.mh-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 0 40px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.mh-stats > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "icon label"
+    "icon value";
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 2px;
+  padding: 20px 24px;
+  border-inline-start: 1px solid var(--line);
+}
+.mh-stats > div:first-child {
+  border-inline-start: 0;
+}
+/* The label and the icon sit in the grid of the cell itself. */
+.mh-stats dt {
+  display: contents;
+}
+.mh-stat-icon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.mh-stat-label {
+  grid-area: label;
+  min-width: 0;
+  color: var(--muted);
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.mh-stats dd {
+  grid-area: value;
+  margin: 0;
+  font-size: var(--fs-4xl);
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.mh-stats .attention .mh-stat-icon {
+  background: var(--attention-bg);
+  color: var(--attention-dot);
+  box-shadow: inset 0 0 0 1px var(--attention-line);
+}
+.mh-short {
+  display: none;
+}
+
+.mh-section {
+  margin-block-end: 36px;
+}
+.mh-home .mh-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+.mh-section h2 > svg {
+  color: var(--brand);
+}
+
+/* What needs the store: one card per order */
+.mh-actions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+.mh-action {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "icon text"
+    "button button";
+  align-items: center;
+  gap: 16px 14px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.mh-action-icon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.mh-action-icon.attention {
+  background: var(--attention-bg);
+  color: var(--attention-dot);
+  box-shadow: inset 0 0 0 1px var(--attention-line);
+}
+.mh-action-text {
+  grid-area: text;
+  min-width: 0;
+}
+.mh-home .mh-action-text h3 {
+  margin: 0 0 2px;
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.mh-home .mh-action-text p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-md);
+}
+.mh-home .mh-action-button {
+  grid-area: button;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 8px 18px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  border: 0;
+  border-radius: var(--r-lg);
+  font-size: var(--fs-input);
+  font-weight: 600;
+  cursor: pointer;
+}
+.mh-home .mh-action-button:hover:not(:disabled) {
+  background: var(--success-line);
+}
+.mh-meta-main {
+  overflow-wrap: anywhere;
+}
+.mh-meta-age::before {
+  content: "·";
+  margin-inline: 6px;
+}
+.mh-more {
+  margin-block-start: 14px;
+}
+.mh-none {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 18px 20px;
+  background: var(--success-bg);
+  border: 1px solid var(--success-line);
+  border-radius: var(--r-card);
+  color: var(--success-fg);
+  font-weight: 600;
+}
+
+/* Active orders: a table on a computer, cards on a phone */
+.mh-active {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.mh-active-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 28px;
+}
+.mh-home .mh-active-head h2 {
+  margin: 0;
+}
+.mh-active-head a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+.mh-columns,
+.mh-row-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1.2fr) 18px;
+  align-items: center;
+  gap: 24px;
+  padding-inline: 28px;
+}
+.mh-columns {
+  padding-block: 14px;
+  background: var(--surface-alt);
+  border-block: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--fs-md);
+  font-weight: 500;
+}
+.mh-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.mh-row {
+  border-block-end: 1px solid var(--line);
+}
+.mh-row:last-child {
+  border-block-end: 0;
+}
+.mh-row-link {
+  padding-block: 20px;
+  color: var(--ink);
+}
+.mh-row-link:hover {
+  background: var(--surface-alt);
+}
+.mh-row-link:focus-visible {
+  outline-offset: -3px;
+}
+.mh-row-link > svg {
+  color: var(--muted);
+}
+.mh-order {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: var(--fs-md);
+  overflow-wrap: anywhere;
+}
+.mh-order strong {
+  flex-basis: 100%;
+  color: var(--ink);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+.mh-area + .mh-age::before {
+  content: "·";
+  margin-inline-end: 6px;
+}
+.mh-driver {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.mh-steps {
+  display: flex;
+  gap: 6px;
+}
+.mh-steps i {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--track);
+}
+.mh-steps i.on {
+  background: var(--brand);
+}
+.mh-stage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-input);
+  font-weight: 500;
+}
+.mh-stage > svg {
+  color: var(--brand);
+}
+.mh-stage.attention > svg {
+  color: var(--warn-fg);
+}
+.mh-customer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: var(--fs-input);
+}
+.mh-stage > span,
+.mh-customer > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.mh-customer.done {
+  color: var(--success-fg);
+}
+.mh-customer.overdue {
+  color: var(--warn-fg);
+}
+.mh-who {
+  display: none;
+}
+.mh-next {
+  color: var(--brand);
+  font-size: var(--fs-input);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.mh-next.none {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+@media (max-width: 1320px) {
+  .mh-stats > div {
+    padding-inline: 18px;
+    column-gap: 12px;
+  }
+  .mh-stat-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .mh-stat-label {
+    font-size: var(--fs-md);
+  }
+}
+@media (max-width: 1100px) {
+  .mh-columns,
+  .mh-row-link {
+    gap: 16px;
+    padding-inline: 20px;
+  }
+  .mh-stats > div {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "icon"
+      "value"
+      "label";
+    justify-items: center;
+    row-gap: 4px;
+    padding: 16px 8px;
+    text-align: center;
+  }
+  .mh-stat-icon {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .mh-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "hello bell"
+      "create create";
+    gap: 18px 12px;
+    margin-block-end: 22px;
+  }
+  .mh-hello {
+    grid-area: hello;
+  }
+  .mh-home .mh-hello h1 {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+  }
+  .mh-greet {
+    color: var(--muted);
+    font-size: var(--fs-lg);
+    font-weight: 500;
+  }
+  .mh-comma,
+  .mh-home .mh-summary,
+  .mh-hello-icon {
+    display: none;
+  }
+  .mh-store {
+    font-size: var(--fs-3xl);
+  }
+  .mh-home .mh-bell {
+    display: inline-flex;
+    grid-area: bell;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+  }
+  .mh-home .mh-create {
+    grid-area: create;
+    width: 100%;
+    min-height: 56px;
+    border-radius: var(--r-card);
+  }
+
+  .mh-stats {
+    margin-block-end: 28px;
+  }
+  .mh-stats > div {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "icon"
+      "value"
+      "label";
+    justify-items: center;
+    row-gap: 2px;
+    padding: 14px 4px;
+    text-align: center;
+  }
+  .mh-stat-icon {
+    width: 34px;
+    height: 34px;
+    margin-block-end: 4px;
+  }
+  .mh-stat-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  .mh-stat-label {
+    font-size: var(--fs-md);
+  }
+  .mh-stats dd {
+    font-size: var(--fs-3xl);
+  }
+  .mh-long {
+    display: none;
+  }
+  .mh-short {
+    display: inline;
+  }
+
+  .mh-section {
+    margin-block-end: 28px;
+  }
+  .mh-home .mh-section h2 {
+    margin-block-end: 12px;
+  }
+  .mh-actions {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    overflow: hidden;
+  }
+  .mh-action-icon {
+    width: 42px;
+    height: 42px;
+  }
+  .mh-action {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "icon text button";
+    gap: 12px;
+    padding: 14px 16px;
+    border: 0;
+    border-block-end: 1px solid var(--line);
+    border-radius: 0;
+  }
+  .mh-action:last-child {
+    border-block-end: 0;
+  }
+  .mh-home .mh-action-text h3 {
+    font-size: var(--fs-lg);
+  }
+  .mh-home .mh-action-text p {
+    font-size: var(--fs-md);
+  }
+  .mh-meta-age {
+    display: block;
+  }
+  .mh-meta-age::before {
+    content: none;
+  }
+  .mh-home .mh-action-button {
+    width: auto;
+    min-height: 44px;
+    padding-inline: 16px;
+    border-radius: var(--r-lg);
+  }
+  .mh-none {
+    padding: 14px 16px;
+  }
+
+  .mh-active {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .mh-active-head {
+    padding: 0 0 12px;
+  }
+  .mh-columns {
+    display: none;
+  }
+  .mh-rows {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    overflow: hidden;
+  }
+  .mh-row-link {
+    grid-template-columns: minmax(0, 1fr) 18px;
+    grid-template-areas:
+      "order chevron"
+      "driver driver"
+      "customer customer";
+    gap: 12px 8px;
+    padding: 16px;
+  }
+  .mh-order {
+    grid-area: order;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    font-size: var(--fs-md);
+  }
+  .mh-order strong {
+    flex-basis: auto;
+    flex-shrink: 0;
+  }
+  .mh-age {
+    margin-inline-start: auto;
+    font-size: var(--fs-md);
+    white-space: nowrap;
+  }
+  .mh-area + .mh-age::before {
+    content: none;
+  }
+  .mh-row-link > svg {
+    grid-area: chevron;
+  }
+  .mh-driver {
+    grid-area: driver;
+  }
+  .mh-customer {
+    grid-area: customer;
+    font-size: var(--fs-md);
+  }
+  .mh-who {
+    display: inline;
+  }
+  .mh-next {
+    display: none;
+  }
+}
+
+/* Give the larger text enough room on narrow phones. */
+@media (max-width: 480px) {
+  .mh-action {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "icon text"
+      "button button";
+    gap: 10px 12px;
+  }
+  .mh-home .mh-action-button {
+    width: 100%;
+  }
+}

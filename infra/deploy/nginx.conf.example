@@ -1,0 +1,60 @@
+# Complete nginx configuration. Replace domain and TLS files before installation.
+# One trusted hop: Node binds to loopback; public traffic reaches nginx only.
+worker_processes 1;
+pid logs/nginx.pid;
+# nginx error logs can embed raw URLs even when access logs are sanitized.
+# Discard them; retain HTTP status/timing below, app request IDs and supervisor status.
+error_log /dev/null;
+events { worker_connections 1024; }
+http {
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+    map $uri $safe_route {
+        default "other";
+        ~^/customer(?:/|$) "customer_page";
+        ~^/api/customer(?:/|$) "customer_api";
+        /api/ready "readiness";
+        /api/health "health";
+        ~^/api/ "api";
+        ~^/store(?:/|$) "store";
+        ~^/admin(?:/|$) "admin";
+    }
+    # No request/URI/query/referrer/agent/header values are logged.
+    log_format waselha_safe escape=json
+        '{"time":"$time_iso8601","method":"$request_method",'
+        '"route":"$safe_route","status":$status,"bytes":$body_bytes_sent,'
+        '"seconds":$request_time,"upstream_status":"$upstream_status",'
+        '"request_id":"$upstream_http_x_request_id"}';
+    access_log logs/waselha-access.log waselha_safe;
+    client_max_body_size 100k;
+    server_tokens off;
+    server {
+        listen 80;
+        server_name app.example.invalid;
+        return 308 https://app.example.invalid$request_uri;
+    }
+    server {
+        listen 443 ssl;
+        server_name app.example.invalid;
+        ssl_certificate /etc/waselha/tls/fullchain.pem;
+        ssl_certificate_key /etc/waselha/tls/privkey.pem;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        location / {
+            proxy_pass http://127.0.0.1:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            # Replace client-supplied forwarding chains at this single edge.
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header Referer "";
+            proxy_connect_timeout 5s;
+            # Longer than Socket.IO pingInterval + pingTimeout (45 seconds).
+            proxy_read_timeout 75s;
+        }
+    }
+}

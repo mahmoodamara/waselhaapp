@@ -1,0 +1,327 @@
+/* Store settings: the same page family as the quick request (heading with
+   breadcrumbs, one card of numbered steps separated by lines). On a phone the
+   card disappears and the steps run on the page background. */
+.ps {
+  max-width: 1040px;
+  margin-inline: auto;
+  font-size: var(--fs-md);
+}
+
+/* Page heading */
+.ps-head {
+  margin-block-end: 20px;
+}
+.ps-back {
+  display: none;
+}
+.ps-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block-end: 8px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.ps-crumbs a {
+  color: var(--muted);
+}
+.ps-crumbs [aria-current] {
+  color: var(--ink);
+  font-weight: 600;
+}
+.ps .ps-head h1 {
+  margin: 0;
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  line-height: 1.5;
+}
+.ps-sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* One card, steps divided by lines */
+.ps-main {
+  min-width: 0;
+  padding: 0 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.ps-step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "num title"
+    ". hint"
+    "body body";
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 8px;
+  padding-block: 18px;
+  border-block-end: 1px solid var(--line);
+}
+.ps-step:last-child {
+  border-block-end: 0;
+}
+.ps-num {
+  grid-area: num;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1;
+}
+.ps-num.done {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+.ps .ps-step h2 {
+  grid-area: title;
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.ps-hint {
+  grid-area: hint;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+}
+.ps-body {
+  grid-area: body;
+  min-width: 0;
+}
+.ps-body > :where(.callout) {
+  margin-block-start: 0;
+}
+
+/* Step 1: area select (as on the quick request) and its save button */
+.ps-area-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.ps-area-form > button {
+  min-height: 46px;
+  margin: 0;
+  border-radius: var(--r-md);
+}
+.ps-area-form > .callout {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.ps-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.ps-select select {
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
+  padding-inline: 44px 36px;
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  font-size: var(--fs-input);
+  font-weight: 500;
+  cursor: pointer;
+}
+.ps-select select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ps-select-icon {
+  position: absolute;
+  inset-inline-start: 12px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: var(--brand);
+  pointer-events: none;
+}
+.ps-select-chevron {
+  position: absolute;
+  inset-inline-end: 12px;
+  display: grid;
+  color: var(--muted);
+  pointer-events: none;
+}
+.ps-note,
+.ps-saved-note {
+  margin: 10px 0 0;
+  font-size: var(--fs-xs);
+}
+.ps-note {
+  color: var(--muted);
+}
+.ps-saved-note {
+  color: var(--success-fg);
+}
+
+/* Step 2: the picker */
+.ps .location-picker {
+  margin: 0;
+}
+.ps .pickup-picker > .button-block {
+  min-height: 46px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.ps .pickup-gps-hint,
+.ps .pickup-search-hint {
+  margin: 8px 0 12px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  line-height: 1.7;
+}
+.ps .pickup-picker .search-row input {
+  min-height: 46px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-input);
+}
+.ps .pickup-picker .search-row button {
+  min-width: 72px;
+  min-height: 46px;
+  border-radius: var(--r-md);
+}
+.ps .pickup-picker .map-box {
+  height: 360px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.ps .pickup-picker .muted {
+  font-size: var(--fs-xs);
+  line-height: 1.7;
+}
+.ps .pickup-picker .callout p:last-child {
+  margin-block-end: 0;
+}
+.ps .pickup-picker .confirm-location {
+  min-height: 46px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+/* Saved point */
+.ps-saved {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+.ps-saved-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.ps-saved > div {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ps-saved strong {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.ps-saved p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+.ps-saved a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--fs-sm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ps-saved button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 760px) {
+  .ps-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-block-end: 16px;
+  }
+  .ps-back {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--ink);
+  }
+  .ps-crumbs,
+  .ps-sub {
+    display: none;
+  }
+  .ps .ps-head h1 {
+    font-size: var(--fs-xl);
+  }
+  .ps-main {
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+  }
+  .ps-step {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "title"
+      "hint"
+      "body";
+    padding-block: 0 20px;
+    border-block-end: 0;
+  }
+  .ps-num {
+    display: none;
+  }
+  .ps .ps-step h2 {
+    font-size: var(--fs-sm);
+  }
+  .ps-area-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ps .pickup-picker .map-box {
+    height: 300px;
+  }
+  .ps-saved {
+    flex-wrap: wrap;
+  }
+  .ps-saved button {
+    width: 100%;
+    justify-content: center;
+  }
+}

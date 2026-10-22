@@ -1,0 +1,2 @@
+# Mounted shell scripts must also work after a Windows checkout.
+*.sh text eol=lf

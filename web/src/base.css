@@ -1,0 +1,423 @@
+/* Shared building blocks: page base, buttons, fields, notices, cards, headings.
+   Every screen (store, customer, admin, login) builds on these, so a button or a
+   field looks the same wherever it appears. Values come from tokens.css.
+
+   The base rules for buttons are wrapped in :where() so they carry no
+   specificity: any component rule can restyle a button without a fight. */
+
+:root {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  font-synthesis: none;
+  line-height: 1.6;
+  font-size: var(--fs-md);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+/* Zero specificity, so a link styled as a button or by a component keeps its own colour. */
+:where(a) {
+  text-decoration: none;
+}
+:where(a:not(.button-link)) {
+  color: var(--brand);
+}
+h2 {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+}
+fieldset {
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Focus: one visible ring for everything that can be focused. */
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Buttons. A bare <button> or .button-link is the primary action; there is
+   exactly one primary action per screen. */
+:where(button, .button-link) {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 10px 19px;
+  background: var(--brand);
+  color: var(--on-brand);
+  border: 1px solid var(--brand);
+  border-radius: var(--r-md);
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+:where(button:hover:not(:disabled), .button-link:hover) {
+  background: var(--brand-hover);
+}
+:where(button:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* Secondary */
+.quiet {
+  background: var(--surface);
+  color: var(--brand-text);
+  border-color: var(--line-strong);
+}
+.quiet:hover:not(:disabled) {
+  background: var(--brand-soft);
+}
+/* Destructive */
+.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--on-brand);
+}
+.danger:hover:not(:disabled) {
+  background: var(--danger-fg);
+  border-color: var(--danger-fg);
+}
+/* Low emphasis: a text link that does something */
+.text-button,
+.mw-text-button {
+  min-height: 36px;
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  color: var(--brand);
+  font-size: var(--fs-sm);
+  text-align: start;
+}
+.text-button:hover:not(:disabled),
+.mw-text-button:hover:not(:disabled) {
+  background: none;
+  text-decoration: underline;
+}
+.danger-text {
+  color: var(--danger-fg);
+}
+/* WhatsApp green is reserved for WhatsApp actions */
+.button-whatsapp {
+  background: var(--whatsapp);
+  border-color: var(--whatsapp);
+  color: var(--on-whatsapp);
+}
+.button-whatsapp:hover {
+  background: var(--whatsapp-hover);
+  border-color: var(--whatsapp-hover);
+}
+.button-block {
+  width: 100%;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.actions .callout {
+  flex: 1;
+  margin: 0;
+}
+
+/* Fields */
+input,
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 10px 12px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--brand);
+}
+input:is([type="checkbox"], [type="radio"]) {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--brand);
+}
+input:disabled,
+select:disabled,
+textarea:disabled {
+  color: var(--muted);
+  background: var(--surface-alt);
+}
+textarea {
+  resize: vertical;
+}
+[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+.field,
+.mw-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: var(--fs-md);
+}
+.field {
+  min-width: min(140px, 100%);
+}
+.field > span,
+.mw-field > span {
+  font-weight: 600;
+}
+.field-error,
+.mw-field-error {
+  color: var(--danger-fg);
+  font-size: var(--fs-xs);
+}
+.check,
+.mw-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* Pick one of a few options (vehicle, parcel size, who pays): big tap targets. */
+.choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+.choice-group legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-weight: 600;
+}
+.choice-group label {
+  position: relative;
+  flex: 1 1 96px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+.choice-group label.selected {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  font-weight: 600;
+}
+.choice-group input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.choice-group input:disabled {
+  cursor: not-allowed;
+}
+.choice-group label:has(input:disabled) {
+  opacity: 0.5;
+}
+.choice-group label:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.choice-group .field-error {
+  flex-basis: 100%;
+}
+.choice-group[aria-invalid="true"] label {
+  border-color: var(--danger);
+}
+
+/* Callouts: one look for results, warnings and explanations.
+   Tones: (none) neutral, .success, .attention, .error. */
+.callout {
+  --tone-bg: var(--surface-alt);
+  --tone-fg: var(--ink);
+  --tone-line: var(--line);
+  scroll-margin: 16px;
+  margin: 15px 0;
+  padding: 14px 18px;
+  background: var(--tone-bg);
+  color: var(--tone-fg);
+  border: 1px solid var(--tone-line);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+}
+.callout.success {
+  --tone-bg: var(--success-bg);
+  --tone-fg: var(--success-fg);
+  --tone-line: var(--success-line);
+}
+.callout.attention {
+  --tone-bg: var(--attention-bg);
+  --tone-fg: var(--attention-fg);
+  --tone-line: var(--attention-line);
+}
+.callout.error {
+  --tone-bg: var(--danger-bg);
+  --tone-fg: var(--danger-fg);
+  --tone-line: var(--danger-line);
+}
+.callout ul {
+  padding-inline-start: 24px;
+  margin: 7px 0;
+}
+.callout :is(p, ul):last-child {
+  margin-block-end: 0;
+}
+
+/* Cards */
+.panel,
+.mw-card {
+  min-width: 0;
+  margin-bottom: 20px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+
+/* Headings and small text */
+.page-title,
+.mw-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 0 0 26px;
+}
+.page-title h1,
+.mw-title h1 {
+  margin: 0;
+  font-size: var(--fs-3xl);
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+}
+.section-title,
+.mw-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.section-title h2,
+.mw-section-title h2 {
+  margin: 0;
+}
+.eyebrow,
+.mw-eyebrow {
+  margin: 0 0 4px;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+.muted,
+.mw-muted {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.empty {
+  padding: 30px;
+  text-align: center;
+  color: var(--muted);
+}
+.negative {
+  color: var(--danger);
+}
+.money {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+/* Numbered steps (settings, customer page) */
+.step-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.step-head h2 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.step-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  border-radius: 50%;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.step-number.done {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+.step-status {
+  margin: 0 0 14px;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+.step-status.success {
+  color: var(--success-fg);
+}
+.step-status.attention {
+  color: var(--attention-fg);
+}
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 4px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}

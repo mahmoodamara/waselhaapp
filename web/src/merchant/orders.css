@@ -1,0 +1,376 @@
+/* Orders use the shared palette and type scale. Keep list styles scoped here
+   so notifications, settlements and the other workspace screens keep theirs. */
+.mo-orders {
+  max-width: 1040px;
+  margin-inline: auto;
+}
+
+.mo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-block-end: 20px;
+}
+.mo-head > div {
+  min-width: 0;
+}
+.mo-orders .mo-head h1 {
+  margin: 0;
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  line-height: 1.5;
+}
+.mo-orders .mo-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.mo-create {
+  min-height: 46px;
+  flex-shrink: 0;
+  border-radius: var(--r-md);
+  font-size: var(--fs-md);
+}
+
+/* One quiet toolbar for finding and narrowing down orders. */
+.mo-tools {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.mo-orders .mw-search {
+  min-height: 46px;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-alt);
+}
+.mo-orders .mw-search:focus-within {
+  border-color: var(--brand);
+}
+.mo-orders .mw-search input {
+  min-height: 44px;
+  padding-block: 8px;
+  font-size: var(--fs-input);
+}
+.mo-orders .mw-search .mw-icon-button {
+  min-width: 44px;
+  min-height: 44px;
+  margin-inline-end: -10px;
+  background: transparent;
+  color: var(--muted);
+}
+.mo-orders .mw-tabs {
+  gap: 4px;
+  margin: 0 0 14px;
+  padding-block-end: 12px;
+}
+.mo-orders .mw-tabs button {
+  min-height: 44px;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+.mo-orders .mw-tabs button:hover {
+  background: var(--surface-alt);
+}
+.mo-orders .mw-tabs button[aria-pressed="true"] {
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  font-weight: 600;
+}
+.mo-tab-count {
+  min-width: 24px;
+  padding: 1px 6px;
+  border-radius: var(--r-sm);
+  background: var(--surface-alt);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+.mo-orders [aria-pressed="true"] .mo-tab-count {
+  background: var(--surface);
+  color: var(--brand-text);
+}
+.mo-orders .mw-filters {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+.mo-orders .mw-filters button {
+  min-height: 44px;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+.mo-orders .mw-filters button[aria-pressed="true"] {
+  color: var(--brand-text);
+  border-color: var(--brand-line);
+  font-weight: 600;
+}
+.mo-orders .mw-count {
+  margin: 0;
+  padding-inline: 5px;
+  min-width: 20px;
+  background: var(--surface-alt);
+}
+.mo-orders .mw-search-context {
+  margin: 0;
+  padding: 0;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+.mo-orders .mw-results-count {
+  min-height: 36px;
+  gap: 8px;
+  margin-block: 12px 8px;
+  font-size: var(--fs-sm);
+}
+.mo-orders .mw-results-count p {
+  margin: 0;
+}
+.mo-orders .mw-results-count button {
+  min-height: 44px;
+}
+
+/* Column headings and rows share a grid. Task buttons stay outside the
+   details link, so both actions are independently keyboard accessible. */
+.mo-orders .mw-list-card {
+  padding: 0;
+  border-radius: var(--r-lg);
+}
+.mo-columns,
+.mo-orders .mw-order-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 140px;
+  align-items: center;
+  gap: 16px;
+  padding-inline: 20px;
+}
+.mo-columns > div,
+.mo-orders .mw-row-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) minmax(0, 0.8fr) 17px;
+  align-items: center;
+  gap: 16px;
+}
+.mo-columns {
+  padding-block: 12px;
+  background: var(--surface-alt);
+  border-block-end: 1px solid var(--line);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+.mo-orders .mw-order-row {
+  padding-block: 16px;
+}
+.mo-orders .mw-order-row:last-child {
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+.mo-orders .mw-order-row:hover {
+  background: var(--surface-alt);
+}
+.mo-orders .mw-row-main {
+  position: static;
+  padding: 0;
+}
+.mo-orders .mw-row-main > svg {
+  position: static;
+  color: var(--muted);
+}
+.mo-orders .mw-row-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  overflow-wrap: anywhere;
+}
+.mo-orders .mw-row-identity strong {
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.mo-orders .mw-row-identity > bdi {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.mo-orders .mw-row-identity small {
+  font-size: var(--fs-xs);
+  line-height: 1.8;
+}
+.mo-orders .mw-row-area {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+.mo-orders .mw-row-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.mo-orders .mw-status {
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  line-height: 1.6;
+}
+.mo-orders .mw-status.attention {
+  background: var(--attention-bg);
+  color: var(--attention-fg);
+}
+.mo-orders .mw-status.success {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+.mo-orders .mw-row-status small {
+  padding-inline-start: 8px;
+  overflow-wrap: anywhere;
+}
+.mo-orders .mw-row-main time {
+  padding: 0;
+  font-size: var(--fs-xs);
+}
+.mo-orders .mw-row-action {
+  margin: 0;
+}
+.mo-orders .mw-row-action button {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  background: var(--brand-soft);
+  border-color: var(--brand-line);
+  color: var(--brand-text);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.mo-orders .mw-row-action button:hover:not(:disabled) {
+  background: var(--success-line);
+}
+.mo-orders .mw-empty {
+  padding: 40px 20px;
+}
+.mo-orders .mw-empty h2 {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+.mo-orders .mw-empty p {
+  margin-block-end: 0;
+  font-size: var(--fs-sm);
+}
+.mo-orders .mw-empty-icon {
+  width: 48px;
+  height: 48px;
+  margin-block-end: 12px;
+}
+
+@media (max-width: 1100px) {
+  .mo-columns {
+    display: none;
+  }
+  .mo-orders .mw-order-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .mo-orders .mw-row-action {
+    justify-self: start;
+  }
+  .mo-orders .mw-row-action button {
+    width: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .mo-head {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    margin-block-end: 16px;
+  }
+  .mo-orders .mo-head h1 {
+    font-size: var(--fs-xl);
+  }
+  .mo-create {
+    width: 100%;
+  }
+  .mo-tools {
+    padding: 12px;
+  }
+  .mo-orders .mw-tabs {
+    gap: 2px;
+    margin-block-end: 12px;
+  }
+  .mo-orders .mw-tabs button {
+    flex: 1;
+    gap: 4px;
+    padding-inline: 6px;
+  }
+  .mo-orders .mw-filters {
+    gap: 6px;
+  }
+  .mo-orders .mw-filters button {
+    padding-inline: 9px;
+    font-size: var(--fs-xs);
+  }
+  .mo-orders .mw-order-row {
+    padding: 14px;
+  }
+  .mo-orders .mw-row-main {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "identity arrow"
+      "status status"
+      "time time";
+    gap: 8px;
+  }
+  .mo-orders .mw-row-identity {
+    grid-area: identity;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 3px 10px;
+    align-items: center;
+  }
+  .mo-orders .mw-row-identity > bdi {
+    font-size: var(--fs-sm);
+  }
+  .mo-orders .mw-row-identity small,
+  .mo-orders .mw-row-area {
+    grid-column: 1 / -1;
+  }
+  .mo-orders .mw-row-main > svg {
+    grid-area: arrow;
+  }
+  .mo-orders .mw-row-status {
+    grid-area: status;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+  .mo-orders .mw-row-status small {
+    padding: 0;
+  }
+  .mo-orders .mw-row-main time {
+    grid-area: time;
+  }
+  .mo-orders .mw-row-action {
+    justify-self: stretch;
+  }
+  .mo-orders .mw-row-action button {
+    width: 100%;
+  }
+}

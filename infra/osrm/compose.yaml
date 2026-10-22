@@ -1,0 +1,12 @@
+services:
+  osrm:
+    restart: unless-stopped
+    # Official Project OSRM 26.10.0 Debian image, pinned to its multiarch digest.
+    image: ghcr.io/project-osrm/osrm-backend@sha256:55dbfd47d984c2cacd64e32901b4321c86b5ec761438e69aa053dc78698a786f
+    command: ["osrm-routed", "--algorithm", "mld", "/data/israel-and-palestine-latest.osrm"]
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - ./data:/data:ro
+    security_opt:
+      - no-new-privileges:true

@@ -1,0 +1,10 @@
+import {readFile,writeFile,readdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+const out=fileURLToPath(new URL('../../../.verification/security-audit-2026-10-18/',import.meta.url));
+const signatures=[['phone',/\b0(?:50|52|54|58)[ -]?\d{3}[ -]?\d{4}\b/g],['JWT',/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g],['customer-link-token',/\b[a-f0-9]{48}\b/gi],['sensitive-coordinate-field',/"(?:latitude|longitude)"\s*:\s*-?\d+(?:\.\d+)?/g],['delivery-code-field',/"(?:deliveryCode|pickupCode)"\s*:\s*"?\d+"?/g]];
+const findings=[];let files=0;
+const previous=JSON.parse(await readFile(out+'log-scan.json','utf8').catch(()=>'{"findings":[]}'));
+for(const file of (await readdir(out)).filter(f=>f.endsWith('.log'))){let s=await readFile(out+file,'utf8');const original=s;files++;for(const [type,re]of signatures){const matches=[...s.matchAll(re)];if(matches.length){findings.push({file,type,occurrences:matches.length,classification:file.startsWith('security-browser-')?'browser assertion accessibility snapshot, synthetic fixture data; test environment':'candidate; no values retained'});s=s.replace(re,`[REDACTED_${type}]`);}}if(s!==original)await writeFile(out+file,s);}
+const historical=[...(previous.findings??[])];for(const finding of findings)if(!historical.some(x=>x.file===finding.file&&x.type===finding.type))historical.push(finding);
+const result={finished:new Date().toISOString(),timezone:'Asia/Jerusalem',filesScanned:files,findings:historical,currentPlaintextCandidates:findings,valuesDisclosed:false,remediation:'Runner now redacts synthetic phone patterns before writing; earlier failure artifacts sanitized in place. Original source filenames and occurrence counts preserved here.',limitation:'Known fixture patterns and sensitive field signatures; TLS/proxy/service logs outside captured audit process require deployment checks.'};
+await writeFile(out+'log-scan.json',JSON.stringify(result,null,2));console.log(JSON.stringify({logFilesScanned:files,plaintextCandidateSources:findings.length,allCandidatesRedacted:true}));

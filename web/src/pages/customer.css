@@ -1,0 +1,768 @@
+/* Customer page: a phone-sized flow. Step 1 is a full-screen map with a sheet
+   below it, step 2 is the details form, then tracking and the delivery code.
+   Colours, radii and type come from tokens.css. */
+.cu-arrived-map { height: 280px; position: relative; margin-block: 16px; border-radius: 16px; overflow: hidden; }
+.cu-arrived-map .cu-map { height: 100%; min-height: 0; }
+.cu-tracking { margin-block: 12px; }
+.cu-tracking.live { color: var(--success, #187348); }
+.cu-tracking.stale { color: var(--warning, #945c10); }
+.cu-driver-marker { border: 3px solid white; border-radius: 50%; background: #1670a7; color: white; text-align: center; line-height: 26px; box-shadow: 0 2px 8px #0005; }
+.cu-shell {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+}
+.cu {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: var(--fs-md);
+}
+@media (min-width: 520px) {
+  .cu {
+    box-shadow: 0 0 0 1px var(--line), var(--shadow-menu);
+  }
+}
+.cu :is(h1, h2, p) {
+  margin-block: 0;
+}
+.cu h1 {
+  font-size: var(--fs-2xl);
+  line-height: 1.4;
+}
+.cu h1:focus {
+  outline: none;
+}
+.cu bdi {
+  unicode-bidi: isolate;
+}
+.cu-muted {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.cu-sub {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  margin-block-start: 2px;
+}
+
+/* ---- Buttons ---- */
+.cu-primary,
+.cu-soft {
+  width: 100%;
+  min-height: 56px;
+  border-radius: var(--r-lg);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+.cu-soft {
+  min-height: 52px;
+  background: var(--brand-soft);
+  border-color: transparent;
+  color: var(--brand-text);
+  font-size: var(--fs-md);
+}
+.cu-soft:hover:not(:disabled) {
+  background: var(--success-bg);
+}
+.cu-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 4px;
+  background: transparent;
+  border: 0;
+  color: var(--brand-text);
+  font-weight: 600;
+  font-size: var(--fs-md);
+}
+.cu-link:hover:not(:disabled) {
+  background: transparent;
+  text-decoration: underline;
+}
+
+/* ---- Overlays on the map and chips ---- */
+.cu-tools {
+  position: absolute;
+  inset-block-start: 14px;
+  inset-inline-end: 14px;
+  z-index: 1100;
+  display: flex;
+  gap: 8px;
+}
+.cu-chip {
+  min-height: 40px;
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  color: var(--brand-text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-float);
+}
+.cu-chip:hover:not(:disabled) {
+  background: var(--brand-soft);
+}
+.cu-chip.icon {
+  width: 40px;
+  padding: 0;
+}
+.cu-pill {
+  position: absolute;
+  inset-block-start: 14px;
+  inset-inline-start: 14px;
+  z-index: 1100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 190px);
+  min-height: 40px;
+  padding: 6px 16px;
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-float);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.cu-pill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cu-pill svg {
+  color: var(--muted);
+}
+.cu-page > .cu-pill {
+  position: static;
+  align-self: flex-start;
+  max-width: calc(100% - 170px);
+}
+
+/* ---- Map ---- */
+.cu-stage {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 560px;
+}
+.cu-map {
+  position: relative;
+  flex: 1;
+  min-height: 240px;
+  background: #e8ebf0;
+  isolation: isolate;
+}
+.cu-map-canvas {
+  position: absolute;
+  inset: 0;
+  direction: ltr;
+  z-index: 0;
+}
+.cu-map .leaflet-control-attribution {
+  font-size: 10px;
+}
+.cu-map-note {
+  position: absolute;
+  inset-inline: 16px;
+  inset-block-start: 64px;
+  z-index: 1100;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-float);
+  font-size: var(--fs-sm);
+}
+.cu-fab {
+  position: absolute;
+  inset-inline-end: 14px;
+  inset-block-end: 40px;
+  z-index: 1100;
+  width: 48px;
+  min-height: 48px;
+  padding: 0;
+  background: var(--surface);
+  border: 0;
+  border-radius: 50%;
+  color: var(--brand);
+  box-shadow: var(--shadow-float);
+}
+.cu-fab:hover:not(:disabled) {
+  background: var(--brand-soft);
+}
+/* The pin stays where the middle of the map is; its tip marks the exact spot. */
+.cu-pin {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  z-index: 1000;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  direction: ltr;
+}
+.cu-pin-icon {
+  position: absolute;
+  inset-inline-start: -23px;
+  inset-block-start: -46px;
+  color: var(--brand);
+  fill: var(--brand);
+  stroke: var(--surface);
+  transition: transform 0.15s ease;
+}
+.cu-pin.unset .cu-pin-icon {
+  color: var(--muted);
+  fill: var(--muted);
+}
+.cu-pin-halo {
+  position: absolute;
+  inset-inline-start: -40px;
+  inset-block-start: -40px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--brand) 18%, transparent);
+}
+.cu-pin.unset .cu-pin-halo {
+  display: none;
+}
+.cu-pin-shadow {
+  position: absolute;
+  inset-inline-start: -7px;
+  inset-block-start: -3px;
+  width: 14px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00000040;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.cu-pin.lifted .cu-pin-icon {
+  transform: translateY(-10px);
+}
+.cu-pin.lifted .cu-pin-shadow {
+  transform: scale(0.7);
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cu-pin-icon,
+  .cu-pin-shadow {
+    transition: none;
+  }
+}
+.cu-tip {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: calc(50% - 96px);
+  z-index: 1100;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin-inline: auto;
+  padding: 8px 18px;
+  background: var(--ink);
+  border-radius: var(--r-pill);
+  color: var(--on-brand);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* ---- Bottom sheet ---- */
+.cu-sheet {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 12px;
+  margin-block-start: -24px;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  max-height: 72%;
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  box-shadow: 0 -4px 24px #13342c14;
+}
+.cu-sheet h1 {
+  font-size: var(--fs-2xl);
+}
+.cu-progress {
+  display: flex;
+  gap: 8px;
+}
+.cu-progress i {
+  flex: 1;
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--track);
+}
+.cu-progress i.on {
+  background: var(--brand);
+}
+.cu-step {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+.cu-address,
+.cu-place {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border-radius: var(--r-lg);
+}
+.cu-address-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.cu-address-text strong {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+.cu-address-text small {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+.cu-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: var(--surface);
+  border-radius: 50%;
+  color: var(--brand);
+}
+.cu-search {
+  display: flex;
+  gap: 8px;
+}
+.cu-search input {
+  flex: 1;
+  min-height: 48px;
+  border-radius: var(--r-lg);
+}
+.cu-search button {
+  border-radius: var(--r-lg);
+}
+.cu-results {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cu-results button {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: start;
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+  font-weight: 400;
+}
+.cu-sheet .callout {
+  margin: 0;
+}
+
+/* ---- Tracking ---- */
+.cu-stages {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 4px 0 2px;
+  padding: 0;
+  list-style: none;
+}
+.cu-stages li {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+.cu-stages li::before {
+  content: "";
+  height: 5px;
+  border-radius: var(--r-pill);
+  background: var(--track);
+}
+.cu-stages li.on::before {
+  background: var(--brand);
+}
+.cu-stages li[aria-current="step"] {
+  color: var(--ink);
+  font-weight: 700;
+}
+.cu-cash {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.cu-cash span {
+  display: grid;
+  gap: 2px;
+}
+.cu-cash small {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+.cu-cash strong {
+  font-size: var(--fs-3xl);
+  line-height: 1.2;
+}
+.cu-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ---- Pages without a map ---- */
+.cu-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px 32px;
+}
+.cu-page > .cu-tools {
+  position: absolute;
+}
+.cu-page:not(.details) {
+  padding-block-start: 14px;
+}
+.cu-card {
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.cu-arrived {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-block-start: 8px;
+}
+.cu-badge {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  background: var(--brand);
+  border-radius: 50%;
+  color: var(--on-brand);
+}
+.cu-code {
+  display: grid;
+  gap: 14px;
+  text-align: center;
+}
+.cu-code h2 {
+  color: var(--muted);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.cu-digits {
+  display: grid;
+  grid-template-columns: repeat(var(--digits, 4), minmax(0, 58px));
+  justify-content: center;
+  gap: clamp(6px, 2vw, 10px);
+  margin: 0;
+}
+.cu-digits span {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 58 / 66;
+  background: var(--success-bg);
+  border: 1px solid var(--brand);
+  border-radius: var(--r-lg);
+  color: var(--brand);
+  font-size: clamp(var(--fs-xl), 7vw, var(--fs-3xl));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Step 2: details ---- */
+.cu-page.details {
+  padding-block-start: 18px;
+}
+.cu-page.details form {
+  display: grid;
+  gap: 16px;
+}
+.cu-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cu-head > div {
+  flex: 1;
+  min-width: 0;
+}
+.cu-back {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  background: var(--surface);
+  border-color: var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+}
+.cu-back:hover:not(:disabled) {
+  background: var(--brand-soft);
+}
+.cu-page.details .cu-step {
+  margin-block-start: -8px;
+}
+.cu-place {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.cu-thumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, transparent 46%, #fff 46% 54%, transparent 54%),
+    linear-gradient(0deg, transparent 46%, #fff 46% 54%, transparent 54%), #e8ebf0;
+  border-radius: var(--r-md);
+}
+.cu-thumb i {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 14px;
+  height: 14px;
+  background: var(--brand);
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--brand) 20%, transparent);
+}
+.cu-place .cu-address-text {
+  order: 0;
+}
+.cu-place .cu-thumb {
+  order: -1;
+}
+.cu-field {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+.cu-field small {
+  color: var(--muted);
+  font-weight: 400;
+}
+.cu-field :is(input, textarea) {
+  min-height: 56px;
+  padding: 12px 16px;
+  border-radius: var(--r-lg);
+  font-weight: 400;
+}
+.cu-field textarea {
+  min-height: 104px;
+}
+.cu-card h2 {
+  margin-block-end: 12px;
+  font-size: var(--fs-lg);
+}
+.cu-summary {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+.cu-summary > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 0;
+}
+.cu-summary dt {
+  display: grid;
+  color: var(--muted);
+}
+.cu-summary dt small {
+  font-size: var(--fs-xs);
+  font-style: italic;
+}
+.cu-summary dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.cu-summary .cu-total {
+  margin-block-start: 6px;
+  padding-block-start: 14px;
+  border-top: 1px solid var(--line);
+}
+.cu-summary .cu-total dt {
+  color: var(--ink);
+  font-weight: 700;
+}
+.cu-summary .cu-total dd {
+  color: var(--brand);
+  font-size: var(--fs-3xl);
+  line-height: 1.2;
+}
+.cu-card .callout {
+  margin: 10px 0 0;
+}
+.cu-card .cu-soft {
+  margin-block-start: 10px;
+}
+.cu-cashnote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: 12px !important;
+  padding: 12px 14px;
+  background: var(--bg);
+  border-radius: var(--r-lg);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+/* The one action stays in reach while the form scrolls. */
+.cu-bar {
+  position: sticky;
+  inset-block-end: 0;
+  display: grid;
+  gap: 8px;
+  margin-inline: -16px;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.cu-bar small {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+@media (max-width: 360px) {
+  .cu-pill {
+    max-width: calc(100% - 150px);
+  }
+}
+
+/* Ready now / later: part of the one confirmation, not a second step. */
+.cu-when {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--surface);
+}
+.cu-when legend {
+  padding: 0 4px;
+  font-weight: 600;
+}
+.cu-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 500;
+}
+.cu-choice input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--brand-text);
+}
+.cu-when small {
+  color: var(--muted);
+}
+/* The unified confirmation page keeps map selection and all fields in one document. */
+.cu-location-inline { margin-block-end: 24px; }
+.cu-location-inline .cu-map { height: 300px; min-height: 260px; position: relative; }
+.cu-location-inline .cu-sheet { position: relative; inset: auto; margin: 0; max-height: none; border-radius: 0 0 24px 24px; }
+.cu.unified .cu-bar { position: static; margin-inline: 0; border-radius: var(--r-card); }
+
+/* Compact customer checkout: the main path fits a phone screen; extra fields
+   expand only when requested. Keep normal scrolling available for large text,
+   small screens and the on-screen keyboard. */
+.cu-checkout { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px 0; }
+.cu-checkout-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cu-checkout-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cu-checkout-brand > span { display: grid; min-width: 0; }
+.cu-checkout-brand strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; }
+.cu-checkout-brand small { color: var(--muted); font-size: 11px; }
+.cu-checkout .cu-chip { min-height: 40px; padding: 6px 10px; box-shadow: none; flex-shrink: 0; }
+.cu-checkout h1.cu-checkout-title { font-size: 19px; line-height: 1.4; }
+.cu-checkout .cu-location-inline.compact { margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; }
+.cu-location-inline.compact .cu-map { height: clamp(145px, 22dvh, 210px); min-height: 145px; }
+.cu-location-inline.compact .cu-tip { display: none; }
+.cu-location-inline.compact .cu-sheet { padding: 10px 12px; gap: 7px; border-radius: 0; box-shadow: none; max-height: none; overflow: visible; }
+.cu-location-inline.compact .cu-sheet h2 { font-size: 15px; }
+.cu-location-inline.compact .cu-address { padding: 0; gap: 8px; background: transparent; }
+.cu-location-inline.compact .cu-icon { width: 30px; height: 30px; }
+.cu-location-inline.compact .cu-address-text strong { font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cu-location-inline.compact .cu-address-text small { font-size: 11px; }
+.cu-location-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; }
+.cu-location-actions :is(.cu-soft, .cu-link) { min-height: 44px; font-size: 13px; padding: 6px 8px; }
+.cu-location-actions .cu-search { grid-column: 1 / -1; }
+.cu-location-inline.compact .callout { margin: 0; padding: 8px; font-size: 12px; }
+.cu-checkout-form { display: flex; flex: 1; flex-direction: column; gap: 9px; min-width: 0; }
+.cu-checkout-price { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 11px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.cu-checkout-price > div { display: grid; align-content: start; gap: 2px; }
+.cu-checkout-price small { font-size: 12px; color: var(--muted); }
+.cu-checkout-price strong { font-size: 16px; }
+.cu-paid { color: var(--brand-text); font-size: 11px; }
+.cu-checkout-pricing { font-size: 12px; }
+.cu-checkout-pricing :is(p, .callout) { margin: 0; padding: 6px 0; }
+.cu-checkout-when { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0; margin: 0; border: 0; }
+.cu-checkout-when legend { font-size: 12px; margin-block-end: 5px; color: var(--muted); }
+.cu-checkout-when label { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 7px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 13px; cursor: pointer; }
+.cu-checkout-when label.selected { border-color: var(--brand); background: var(--brand-soft); color: var(--brand-text); }
+.cu-checkout-when input { width: 17px; height: 17px; min-height: 0; margin: 0; accent-color: var(--brand); }
+.cu-checkout-extra { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.cu-checkout-extra summary { padding: 10px 12px; min-height: 44px; font-size: 12px; cursor: pointer; }
+.cu-checkout-extra-body { display: grid; gap: 10px; padding: 0 12px 12px; }
+.cu-checkout-extra .cu-field { gap: 5px; font-size: 13px; }
+.cu-checkout-extra .cu-field :is(input, textarea) { padding: 9px 12px; min-height: 44px; font-size: 16px; }
+.cu-checkout-extra .cu-field textarea { min-height: 76px; }
+.cu-checkout-bar { position: sticky; bottom: 0; z-index: 1200; display: grid; gap: 7px; margin: auto -12px 0; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -6px 24px #13342c0b; }
+.cu-checkout-total { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.cu-checkout-total > span { display: grid; gap: 1px; }
+.cu-checkout-total > span > span { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 11px; }
+.cu-checkout-total small { font-size: 12px; }
+.cu-checkout-total strong { font-size: 24px; line-height: 1.25; }
+.cu-checkout-bar .cu-primary { min-height: 48px; font-size: 16px; }
+.cu-checkout-consent { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 10px; color: var(--muted); text-align: center; }
+@media (max-height: 740px) {
+  .cu-checkout { gap: 7px; }
+  .cu-location-inline.compact .cu-map { height: 120px; min-height: 120px; }
+  .cu-checkout-form { gap: 6px; }
+  .cu-checkout-price { padding-block: 10px; }
+}
+/* The tracking screen retains the same controls with a smaller information sheet. */
+.cu-stage .cu-sheet { gap: 9px; padding: 15px 16px calc(15px + env(safe-area-inset-bottom)); }
+.cu-stage .cu-sheet .cu-cash { padding: 10px 12px; }
+.cu-stage .cu-sheet .cu-foot { font-size: 11px; }
+.cu-track-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: var(--surface); }
+.cu-track-top .cu-pill { position: static; flex: 1; max-width: none; min-width: 0; padding: 7px 9px; box-shadow: none; }
+.cu-track-top .cu-tools { position: static; flex-shrink: 0; gap: 6px; }
+.cu-track-top .cu-chip { padding: 6px 9px; box-shadow: none; }
+.cu-track-stage .cu-map { min-height: 160px; }
+.cu-track-stage .cu-sheet { max-height: 70%; }
+.cu-track-stage .cu-sheet h1 { font-size: 22px; }
+.cu-track-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.cu-track-actions > :is(a, button) { flex: 1; min-height: 44px; padding: 7px 9px; font-size: 13px; }
+.cu-arrived-map { height: clamp(150px, 24dvh, 230px); margin-block: 8px; }
