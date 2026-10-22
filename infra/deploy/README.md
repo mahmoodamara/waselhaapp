@@ -78,7 +78,7 @@ exception is needed. Never proxy Redis or OSRM through nginx.
    HOST=127.0.0.1
    REDIS_URL=redis://:<same-64-hex-password>@127.0.0.1:6379
    ROUTING_BASE_URL=http://127.0.0.1:5000
-   ROUTING_TIMEOUT_MS=5000
+   ROUTING_TIMEOUT_MS=30000
    ```
 
    Preserve all other existing settings from `backend/.env.production.example`,

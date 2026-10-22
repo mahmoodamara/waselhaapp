@@ -1,5 +1,10 @@
 # waselhaapp
 
+إصلاح حساب السعر وتفعيل تأكيد الزبون: [التفاصيل والاختبارات](docs/customer-pricing-timeout-fix-2026-10-22.md).
+مهلة OSRM الافتراضية 30 ثانية ومهلة واجهة الويب 40 ثانية؛ اضبط `ROUTING_TIMEOUT_MS=30000` في Render إذا كانت هناك قيمة قديمة صريحة.
+
+يمكن نشر واجهة الويب على Cloudflare Workers مع Static Assets، مع إبقاء API وSocket.IO على Render. راجع [دليل النشر والربط](docs/cloudflare-web.md).
+
 سيرفر واصلها وواجهات المتجر والإدارة والعميل، مهيأة للبناء من المصدر على Render.
 
 ## المحتويات

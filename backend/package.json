@@ -46,7 +46,7 @@
     "test:finance": "node --test --test-concurrency=1 test/finance.js",
     "test:eligibility": "node --test --test-concurrency=1 test/driver-eligibility.js",
     "test:timeouts": "node --test --test-concurrency=1 test/order-timeouts.js",
-    "test:route-pricing": "node --test --test-concurrency=1 test/routing-adapter.js test/route-pricing.js",
+    "test:route-pricing": "node --test --test-concurrency=1 test/routing-timeout.js test/routing-adapter.js test/route-pricing.js",
     "test:audit": "node --test --test-concurrency=1 test/audit-fixes.js",
     "test:backup": "node --test --test-concurrency=1 test/backup.js",
     "test:ui-finance": "node test/run-ui-finance.js"

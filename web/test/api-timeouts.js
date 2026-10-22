@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { createServer } from "node:http";
 import { once } from "node:events";
 
-test("web and driver requests time out when headers arrive but the response body stalls", { timeout: 30000 }, async () => {
+test("web and driver requests time out when headers arrive but the response body stalls", { timeout: 50000 }, async () => {
   const sockets = new Set();
   const server = createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "application/json" });
@@ -19,7 +19,7 @@ test("web and driver requests time out when headers arrive but the response body
   process.env.EXPO_PUBLIC_API_URL = `${base}/api`;
   // Bound the pre-fix failure too: a broken client reaches this server-side
   // disconnect instead of hanging the test process forever.
-  const fallback = setTimeout(() => { for (const socket of sockets) socket.destroy(); }, 22000);
+  const fallback = setTimeout(() => { for (const socket of sockets) socket.destroy(); }, 45000);
   try {
     const web = await import("../src/api.js");
     const driver = await import("../../driver-app/api.js");

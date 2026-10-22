@@ -4,7 +4,8 @@ export async function api(path, options = {}) {
   // A request that hangs would freeze the screen; after the limit the outcome is
   // unknown (the server may have applied it), so the caller is told to re-check.
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
+  // Route pricing can wait up to 30 seconds on the server, plus transport/DB time.
+  const timer = setTimeout(() => controller.abort(), 40000);
   try {
     response = await fetch(`/api${path}`, {
       signal: controller.signal,

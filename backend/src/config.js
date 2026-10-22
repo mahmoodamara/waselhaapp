@@ -70,7 +70,9 @@ function routingUrl() {
     throw new Error("ROUTING_BASE_URL must use HTTPS (or local HTTP), without credentials/query/fragment");
   return value;
 }
-const routingTimeoutMs = positiveInteger("ROUTING_TIMEOUT_MS", 5000);
+// Hosted OSRM may need time to wake after idling. Keep the wait bounded while
+// allowing its first response to complete before leaving a price pending.
+const routingTimeoutMs = positiveInteger("ROUTING_TIMEOUT_MS", 30000);
 if (routingTimeoutMs > 30000) throw new Error("ROUTING_TIMEOUT_MS must be at most 30000");
 // Number of reverse-proxy hops to trust for the client IP (X-Forwarded-For).
 // Unset = none: req.ip is the direct peer. Required behind a proxy, otherwise
