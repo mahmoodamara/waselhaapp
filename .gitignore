@@ -21,6 +21,9 @@ build/
 coverage/
 .verification/
 .expo/
+.wrangler/
+.dev.vars
+.dev.vars.*
 .playwright-mcp/
 backups/
 backup/
