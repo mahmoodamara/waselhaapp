@@ -5,6 +5,8 @@
 
 يمكن نشر واجهة الويب على Cloudflare Workers مع Static Assets، مع إبقاء API وSocket.IO على Render. راجع [دليل النشر والربط](docs/cloudflare-web.md).
 
+الواجهة مفعلة على **[waselhapp.com](https://waselhapp.com)** عبر Cloudflare Worker باسم `waselha-web`؛ بقي السيرفر على Render. تحققت صفحات الموقع والـAPI وWebSocket والجاهزية، وفُحصت شاشة الدخول بالعربية والعبرية على الهاتف في 22 أكتوبر 2026.
+
 سيرفر واصلها وواجهات المتجر والإدارة والعميل، مهيأة للبناء من المصدر على Render.
 
 ## المحتويات

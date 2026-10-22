@@ -1,5 +1,28 @@
 # واجهة واصلها على Cloudflare Workers
 
+## الحالة الفعلية — 22 أكتوبر 2026
+
+نُشرت الواجهة وربطت بالدومين الحالي [waselhapp.com](https://waselhapp.com)
+عبر Worker باسم `waselha-web` ومسار `waselhapp.com/*`. لم تتغير سجلات DNS؛ يبقى
+عنوان Render المباشر هو upstream للـAPI وSocket.IO لتجنب حلقات التوجيه.
+إصدار Worker المتحقق منه: `72f889c1-26fa-47ba-9c5d-92899d235a7c`.
+
+نجحت صفحات الموقع والروابط الداخلية وJSON للـAPI ورفض طلب محمي دون مصادقة
+بالحالة 401، ونجح WebSocket upgrade. فُحصت شاشة الدخول على 375px بالعربية
+والعبرية دون أخطاء متصفح أو overflow. أعادت الجاهزية HTTP 200 مع MongoDB
+وRedis وrouting بقيمة ok بعد استيقاظ OSRM. سُجلت أول محاولة routing كغير متاحة،
+ثم نجح طلب OSRM فعلي خلال نحو 13 ثانية؛ خمول الخدمة المجانية ما زال واردًا.
+
+أزيلت مسارات الاختبار المؤقتة بعد نجاح الفحص. الأدلة المحلية الخالية من الأسرار
+في `.verification/cloudflare-web-2026-10-22/`. لم تُنشأ طلبات أو تُرسل رسائل
+لاختبار النشر. لم يُختبر تدفق توصيل كامل على بيانات حقيقية.
+
+للرجوع إلى تقديم الواجهة من Render، عطّل مسار Worker `waselhapp.com/*` في
+Cloudflare؛ سجلات DNS الحالية ما زالت تشير إلى أصل Render. لا تحذف خدمة Render
+أو تغيّر `BACKEND_ORIGIN` إلى الدومين نفسه.
+
+## البنية
+
 تُنشر واجهة React/Vite باستخدام Workers Static Assets. يبقى Node/Express وMongoDB
 وRedis وOSRM على Render. يمرر Worker فقط `/api` و`/socket.io` إلى
 `https://waselhaapp.onrender.com`، مع إبقاء المصادقة والتسعير وصلاحيات الوصول
