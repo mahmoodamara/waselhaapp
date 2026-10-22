@@ -29,6 +29,12 @@ Build Command:
 npm --prefix backend ci && npm --prefix web ci --include=dev && npm --prefix web run build
 ```
 
+## خدمة OSRM المنفصلة على Render
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mahmoodamara/waselhaapp)
+
+ينشئ الزر خدمة المسارات الناقصة فقط، بخطة Free ومنطقة Frankfurt. راجع [دليل النشر والربط بالسيرفر الحالي](docs/render-osrm.md)، ثم اضبط `ROUTING_BASE_URL` بالرابط الفعلي بعد نجاح فحصه. لا تحتاج خدمة OSRM أي أسرار MongoDB أو Redis أو JWT.
+
 ## المتغيرات السرية
 
 استخدم إعدادات Environment في Render. الملف `backend/.env.render.example` يوضح أسماء الإعدادات فقط؛ لا يحتوي بيانات اتصال أو JWT حقيقيًا. ملفات `.env` الخاصة تبقى خارج Git.

@@ -1,5 +1,9 @@
 # Local self-hosted OSRM
 
+For a separate Render routing service, use the pinned multi-stage image and
+Blueprint documented in [Render deployment](../../docs/render-osrm.md).
+The local compose below remains a separate deployment option.
+
 For production on the backend host, use [the production runbook](../deploy/README.md)
 and `scripts/setup-osrm.sh`. It reuses this pinned image and builds isolated,
 route-checked releases without changing the running graph. This local compose

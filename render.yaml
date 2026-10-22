@@ -1,0 +1,18 @@
+# Creates ONLY the missing routing service. The existing Node service is retained.
+# Review the Free plan and workspace usage before confirming in Render.
+services:
+  - type: web
+    name: waselha-osrm
+    runtime: docker
+    plan: free
+    region: frankfurt
+    branch: main
+    dockerfilePath: infra/osrm/render/Dockerfile
+    dockerContext: infra/osrm/render
+    autoDeployTrigger: off
+    healthCheckPath: "/route/v1/driving/35.3357268,32.7486911;35.3437821,32.7356136?overview=false&steps=false&alternatives=false"
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: OSRM_THREADS
+        value: "1"

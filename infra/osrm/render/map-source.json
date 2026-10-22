@@ -1,0 +1,11 @@
+{
+  "url": "https://download.geofabrik.de/asia/israel-and-palestine-261021.osm.pbf",
+  "sha256": "1a70e7685fdc25b6f3ab415313e06cb48fad60cc7838f436bf5ff0a283e08471",
+  "bytes": 120594636,
+  "md5": "b8fef0ea16315585092e3f1760240ab4",
+  "osmTimestamp": "2026-10-21T20:21:46Z",
+  "coverage": "Geofabrik Israel and Palestine extract",
+  "license": "ODbL-1.0",
+  "attribution": "OpenStreetMap contributors",
+  "licenseUrl": "https://www.openstreetmap.org/copyright"
+}

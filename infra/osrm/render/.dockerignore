@@ -1,0 +1,8 @@
+# Narrow allowlist: no environment files, local graphs or credentials can enter.
+**
+!Dockerfile
+!map-source.json
+!download-map.py
+!start-render.sh
+!healthcheck-render.sh
+!ATTRIBUTION.md

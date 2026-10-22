@@ -40,3 +40,7 @@ infra/osrm/data/
 Thumbs.db
 .vscode/
 .idea/
+
+# Python test artifacts
+__pycache__/
+*.py[cod]
